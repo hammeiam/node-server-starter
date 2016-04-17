@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "david",
+    "password": null,
+    "database": "database_development",
+    "host": "localhost",
+    "port": "5432",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "david",
+    "password": null,
+    "database": "database_test",
+    "host": "localhost",
+    "port": "5432",
+    "dialect": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "url": "DATABASE_URL",
+    "dialect": "postgres"
+  }
+}
