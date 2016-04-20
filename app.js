@@ -23,6 +23,11 @@ app.use(function(req, res, next) {
   next()
 })
 
+app.use(function(req, res, next) {
+  res.setHeader('Content-Type', 'application/vnd.api+json')
+  next()
+})
+
 app.use(morgan('dev'));
 
 //--- ROUTING ---//
@@ -37,10 +42,40 @@ app.get('/', function(req, res) {
 
 app.use('/', apiRouter);
 
-// error handling
+// 404 middleware
+app.use(function(req, res, next) {
+  res.status(404).send({
+    success: false,
+    status: '404',
+    errors: ['404 Not Found']
+  });
+});
+
+// validation erro handling middleware
 app.use(function(err, req, res, next) {
+  console.log(err)
+
+  if(err.name === 'SequelizeValidationError'){
+    var message = err.message || 'Invalid Input'
+    res.status(422).json({
+      success: false,
+      status: '422',
+      message: message
+    })
+  } else {
+    next(err)
+  }
+});
+
+
+// catchall error handling
+app.use(function(err, req, res, next) {
+  console.log(err)
+
   res.status(err.status || 500);
-  res.render('error', {
+  res.json({
+    success: false,
+    status: res.status,
     message: err.message,
     error: (app.get('env') === 'development') ? err : {}
   });

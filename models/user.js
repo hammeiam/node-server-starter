@@ -19,19 +19,21 @@ module.exports = function(sequelize, DataTypes) {
         isEmail: true,
         isLowercase: true,
         notEmpty: true,
-        len: [1,255],
+        len: [5,255],
         isUnique: function(value, next) {
           User.find({
             where: {email: value},
             attributes: ['id']
           })
-          .done(function(error, user) {
-            if (error){ return next(error) }
-            // be sure to catch erros in controller
+          .then(function(user) {
             // http://stackoverflow.com/questions/16356856/sequelize-js-custom-validator-check-for-unique-username-password
-            if (user){ return next('Email address already in use!') }
+            if (user){
+              return next('Email address already in use!')
+            }
 
-            next();
+            return next();
+          }).catch(function(err){
+            return next(err)
           });
         }
       }
@@ -62,30 +64,30 @@ module.exports = function(sequelize, DataTypes) {
     }
   })
 
-  var hasSecurePassword = function(user, options, callback) {
+  var hasSecurePassword = function(user, options, next) {
     // https://nodeontrain.xyz/tuts/secure_password/
     // if (user.password != user.password_confirmation) {
     //   throw new Error('Password confirmation doesn\'t match Password');
     // }
     bcrypt.hash(user.get('password'), 10, function(err, hash) {
-      if (err) return callback(err);
+      if (err) return next(err);
       user.set('password', hash);
-      return callback(null, options);
+      return next(null, options);
     });
   };
 
-  User.beforeCreate(function(user, options, callback) {
+  User.beforeCreate(function(user, options, next) {
     if (user.password)
-      hasSecurePassword(user, options, callback);
+      hasSecurePassword(user, options, next);
     else
-      return callback(null, options);
+      return next(null, options);
   })
 
-  User.beforeUpdate(function(user, options, callback) {
+  User.beforeUpdate(function(user, options, next) {
     if (user.password)
-      hasSecurePassword(user, options, callback);
+      hasSecurePassword(user, options, next);
     else
-      return callback(null, options);
+      return next(null, options);
   })
   return User;
 };
