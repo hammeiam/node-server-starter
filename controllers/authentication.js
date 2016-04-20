@@ -1,5 +1,6 @@
 var jwt = require('jsonwebtoken')
 var models = require('../models/index')
+var errors = require('../errors');
 var secret = process.env.AUTH_SECRET || 'changeMeASAP'
 
 var authenticationController = {
@@ -9,11 +10,7 @@ var authenticationController = {
     })
     .then(function(user){
       if(!user){
-        return next({
-          status: '401',
-          success: false,
-          message: 'No such user'
-        })
+        return next(errors.unauthorized('No such user'))
       }
 
       user.validPassword(req.body.password, function(err, isValid){
@@ -21,11 +18,7 @@ var authenticationController = {
           return next(err)
         }
         if(!isValid){
-          return next({
-            status: '401',
-            success: false,
-            message: 'Incorrect password'
-          })
+          return next(errors.unauthorized('Incorrect password'))
         }
         var payload = {
           id: user.id,
@@ -53,20 +46,12 @@ var authenticationController = {
     var token = req.body.token || req.query.token || req.headers['x-access-token']
 
     if(!token){
-      return next({
-        status: '403',
-        success: false,
-        message: 'No token provided.'
-      })
+      return next(errors.forbidden('No token provided'))
     }
 
     jwt.verify(token, secret, function(err, decoded) {
       if(err){
-        return next({
-          status: '403',
-          success: false,
-          message: 'Failed to authenticate token'
-        });
+        return next(errors.forbidden('Failed to authenticate token'))
       }
 
       console.log('Authenticated user ' + decoded.id);

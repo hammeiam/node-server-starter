@@ -2,9 +2,7 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var morgan = require('morgan')
 var apiRouter = require('./routes');
-// var mongoose = require('mongoose')
-// var dbHost = 'localhost'
-// var dbName = 'node-server-starter'
+var errors = require('./errors')
 var appPort = process.env.PORT || 8080
 
 // connect to our db
@@ -41,12 +39,13 @@ app.use('/', apiRouter);
 app.use(function(req, res, next) {
   res.status(404).send({
     success: false,
-    status: '404',
-    errors: ['404 Not Found']
+    errors: [
+      errors.notFound()
+    ]
   });
 });
 
-// validation erro handling middleware
+// validation error handling middleware
 app.use(function(err, req, res, next) {
   console.log(err)
 
@@ -66,14 +65,28 @@ app.use(function(err, req, res, next) {
 // catchall error handling
 app.use(function(err, req, res, next) {
   console.log(err)
+  // handle multiple errors, format like http://jsonapi.org/examples/#error-objects
 
   res.status(err.status || 500);
-  res.json({
-    success: false,
-    status: res.status,
-    message: err.message,
-    error: (app.get('env') === 'development') ? err : {}
-  });
+  if(err.hasOwnProperty('title')){
+    res.json({
+      success: false,
+      errors: [
+        err
+      ]
+    });
+  } else {
+    res.json({
+      success: false,
+      errors: [
+        {
+          status: err.status,
+          message: err.message,
+          error: (app.get('env') === 'development') ? err : {}
+        }
+      ]
+    });
+  }
 });
 
 module.exports = app

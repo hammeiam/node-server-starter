@@ -47,13 +47,15 @@ var usersController = {
 
   delete: function deleteUser(req, res, next){
     models.User
-    .destroy({
+    .findOne({
       where: {
         id: req.params.id
       }
     }).then(function(user) {
       if(user){
-        res.json(user)
+        user.destroy().then(function() {
+          res.json(user)
+        })
       } else {
         next()
       }
