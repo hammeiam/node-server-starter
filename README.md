@@ -15,5 +15,7 @@ A small repo to get started with Node, Express, Sequelize, and Postgres.
 - better error handling in controller https://github.com/sequelize/sequelize/issues/1949
 - add better logging
 - write some tests
-- jwt auth middleware
-- create controllers to simplify routes
+- make sure that returned errors are json spec compliant. Standardize somehow.
+- move towards promises for everything
+- jwt auth middleware X
+- create controllers to simplify routes X

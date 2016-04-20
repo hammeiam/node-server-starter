@@ -1,4 +1,3 @@
-var Sequelize = require('sequelize')
 var models = require('../models/index')
 var debug = require('debug')('user-controller');
 

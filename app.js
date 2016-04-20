@@ -13,7 +13,9 @@ var appPort = process.env.PORT || 8080
 var app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(morgan('dev'));
 
+//--- HEADERS ---//
 // configuration for accepting CORS requests, can be removed
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -28,17 +30,10 @@ app.use(function(req, res, next) {
   next()
 })
 
-app.use(morgan('dev'));
-
 //--- ROUTING ---//
 app.get('/', function(req, res) {
   res.send('Your server is alive! Remove this route.')
 })
-
-// var apiRouter = express.Router();
-// apiRouter.get('/', function(req, res) {
-//   res.json({ message: 'hooray! welcome to our api!' });
-// })
 
 app.use('/', apiRouter);
 
@@ -57,14 +52,14 @@ app.use(function(err, req, res, next) {
 
   if(err.name === 'SequelizeValidationError'){
     var message = err.message || 'Invalid Input'
-    res.status(422).json({
+    return next({
       success: false,
       status: '422',
       message: message
     })
-  } else {
-    next(err)
   }
+
+  next(err)
 });
 
 

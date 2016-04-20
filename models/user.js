@@ -21,13 +21,14 @@ module.exports = function(sequelize, DataTypes) {
         notEmpty: true,
         len: [5,255],
         isUnique: function(value, next) {
+          var self = this
           User.find({
             where: {email: value},
             attributes: ['id']
           })
           .then(function(user) {
             // http://stackoverflow.com/questions/16356856/sequelize-js-custom-validator-check-for-unique-username-password
-            if (user){
+            if (user && user.id !== self.id){
               return next('Email address already in use!')
             }
 
@@ -46,7 +47,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     instanceMethods:{
       validPassword : function (password, next) {
-        bcrypt.compare(password, this.password, next)
+        return bcrypt.compare(password, this.password, next)
       },
       toJSON: function(){
         return {
@@ -72,7 +73,7 @@ module.exports = function(sequelize, DataTypes) {
     bcrypt.hash(user.get('password'), 10, function(err, hash) {
       if (err) return next(err);
       user.set('password', hash);
-      return next(null, options);
+      return next();
     });
   };
 
@@ -80,14 +81,14 @@ module.exports = function(sequelize, DataTypes) {
     if (user.password)
       hasSecurePassword(user, options, next);
     else
-      return next(null, options);
+      return next();
   })
 
   User.beforeUpdate(function(user, options, next) {
     if (user.password)
       hasSecurePassword(user, options, next);
     else
-      return next(null, options);
+      return next();
   })
   return User;
 };
