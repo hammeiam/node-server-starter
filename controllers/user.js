@@ -1,5 +1,6 @@
 var models = require('../models/index')
 var debug = require('debug')('user-controller');
+var format = require('../util/jsonAPIFormatter')
 
 var allowedUserAttributes = ['email', 'password', 'displayName']
 
@@ -19,7 +20,7 @@ var usersController = {
     models.User
     .findAll({})
     .then(function(users) {
-      res.json(users)
+      res.json(format(users))
     })
     .catch(function(err){
       next(err)
@@ -35,7 +36,7 @@ var usersController = {
     })
     .then(function(user){
       if(user){
-        res.json(user)
+        res.json(format(user))
       } else {
         next()
       }
@@ -54,7 +55,7 @@ var usersController = {
     }).then(function(user) {
       if(user){
         user.destroy().then(function() {
-          res.json(user)
+          res.json(format(user))
         })
       } else {
         next()
@@ -69,7 +70,7 @@ var usersController = {
     models.User
     .create(createUpdateObject(req))
     .then(function(user) {
-      res.json(user);
+      res.json(format(user));
     })
     .catch(function(err){
       next(err)
@@ -87,7 +88,7 @@ var usersController = {
       if(user){
         user.updateAttributes(createUpdateObject(req))
         .then(function(user) {
-          res.send(user);
+          res.send(format(user));
         })
       } else {
         next()

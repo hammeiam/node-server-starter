@@ -1,12 +1,14 @@
 var jwt = require('jsonwebtoken')
 var models = require('../models/index')
-var errors = require('../errors');
+var errors = require('../util/errors')
 var secret = process.env.AUTH_SECRET || 'changeMeASAP'
 
 var authenticationController = {
   post: function(req, res, next){
     models.User.findOne({
-      email: req.body.email
+      where: {
+        email: req.body.email
+      }
     })
     .then(function(user){
       if(!user){

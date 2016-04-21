@@ -2,7 +2,7 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var morgan = require('morgan')
 var apiRouter = require('./routes');
-var errors = require('./errors')
+var errors = require('./util/errors')
 var appPort = process.env.PORT || 8080
 
 // connect to our db
@@ -52,7 +52,6 @@ app.use(function(err, req, res, next) {
   if(err.name === 'SequelizeValidationError'){
     var message = err.message || 'Invalid Input'
     return next({
-      success: false,
       status: '422',
       message: message
     })
@@ -69,20 +68,19 @@ app.use(function(err, req, res, next) {
 
   res.status(err.status || 500);
   if(err.hasOwnProperty('title')){
+    // I'm guessing this was a handled error
     res.json({
-      success: false,
       errors: [
         err
       ]
     });
   } else {
     res.json({
-      success: false,
       errors: [
         {
           status: err.status,
           message: err.message,
-          error: (app.get('env') === 'development') ? err : {}
+          errorDetails: (app.get('env') === 'development') ? err : {}
         }
       ]
     });
