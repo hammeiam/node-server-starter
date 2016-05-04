@@ -37,9 +37,7 @@ var authenticationController = {
         })
       })
     })
-    .catch(function(err){
-      next(err)
-    })
+    .catch(next)
   },
 
   confirm: function(req, res, next){

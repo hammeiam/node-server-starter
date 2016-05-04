@@ -4,8 +4,8 @@
 *  TODO: handle associations
 */
 function formatItem(item){
+  // sequelize internal properties
   var className = item['$modelOptions']['name']['plural']
-  var formattedAttributes = {}
   var itemAttributes = item.toJSON()
   delete itemAttributes.id
 

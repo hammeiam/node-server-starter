@@ -22,9 +22,7 @@ var usersController = {
     .then(function(users) {
       res.json(format(users))
     })
-    .catch(function(err){
-      next(err)
-    });
+    .catch(next);
   },
 
   get: function getUser(req, res, next){
@@ -41,9 +39,7 @@ var usersController = {
         next()
       }
     })
-    .catch(function(err){
-      next(err)
-    })
+    .catch(next)
   },
 
   delete: function deleteUser(req, res, next){
@@ -61,9 +57,7 @@ var usersController = {
         next()
       }
     })
-    .catch(function(err) {
-      next(err)
-    })
+    .catch(next)
   },
 
   post: function postUser(req, res, next) {
@@ -72,9 +66,7 @@ var usersController = {
     .then(function(user) {
       res.json(format(user));
     })
-    .catch(function(err){
-      next(err)
-    })
+    .catch(next)
   },
 
   put: function putUser(req, res, next) {
@@ -94,9 +86,7 @@ var usersController = {
         next()
       }
     })
-    .catch(function(err){
-      next(err)
-    })
+    .catch(next)
   }
 }
 

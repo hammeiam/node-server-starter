@@ -6,8 +6,19 @@ function defaultError(){
   }
 }
 
+function MyError(message) {
+  this.name = 'MyError';
+  this.status = '404'
+  this.title = 'Not Found'
+  this.message = message || 'Default Message';
+  this.stack = (new Error()).stack;
+}
+MyError.prototype = Object.create(Error.prototype);
+MyError.prototype.constructor = MyError;
+
 var errors = {
   notFound: function(comment){
+    return new MyError(comment)
     var errorObj = {
       status: '404',
       title: 'Not Found'

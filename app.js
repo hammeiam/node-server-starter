@@ -1,8 +1,8 @@
 var express = require('express')
 var bodyParser = require('body-parser')
-var morgan = require('morgan')
 var apiRouter = require('./routes');
 var errors = require('./util/errors')
+var logger = require('./log')
 var appPort = process.env.PORT || 8080
 
 // connect to our db
@@ -11,8 +11,10 @@ var appPort = process.env.PORT || 8080
 var app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(morgan('dev'));
-
+app.use(function(req, res, next){
+  logger.info({req: req})
+  next()
+})
 //--- HEADERS ---//
 // configuration for accepting CORS requests, can be removed
 app.use(function(req, res, next) {
@@ -37,18 +39,18 @@ app.use('/', apiRouter);
 
 // 404 middleware
 app.use(function(req, res, next) {
-  res.status(404).send({
-    success: false,
-    errors: [
-      errors.notFound()
-    ]
-  });
+  // res.status(404).send({
+  //   success: false,
+  //   errors: [
+  //     errors.notFound()
+  //   ]
+  // });
+  // logger.info({res: res})
+  next(errors.notFound())
 });
 
 // validation error handling middleware
 app.use(function(err, req, res, next) {
-  console.log(err)
-
   if(err.name === 'SequelizeValidationError'){
     var message = err.message || 'Invalid Input'
     return next({
@@ -63,7 +65,7 @@ app.use(function(err, req, res, next) {
 
 // catchall error handling
 app.use(function(err, req, res, next) {
-  console.log(err)
+  logger.warn({err: err})
   // handle multiple errors, format like http://jsonapi.org/examples/#error-objects
 
   res.status(err.status || 500);
@@ -85,6 +87,7 @@ app.use(function(err, req, res, next) {
       ]
     });
   }
+  logger.info({res: res})
 });
 
 module.exports = app
