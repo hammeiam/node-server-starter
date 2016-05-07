@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 
-var debug = require('debug')('app-server');
 var app = require('../app');
 var models = require('../models');
-
-app.set('port', process.env.PORT || 8080);
+var logger = require('../log')
 
 module.exports = models.sequelize.sync().then(function () {
   var server = app.listen(app.get('port'), function() {
-    console.log('Express server listening on port ' + server.address().port);
+    logger.info('Express server listening on port ' + server.address().port);
   });
 });

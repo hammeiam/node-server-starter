@@ -1,44 +1,49 @@
-var bunyan = require('bunyan'),
-  bformat = require('bunyan-format'),
-  formatOut = bformat({ outputMode: 'short' })
-// log to file in prod, stdout in dev
-function liteReqSerializer(req){
-  return {
-    method: req.method,
-    url: req.url
-    // header: req.headers
-  }
+var winston = require('winston')
+var logger;
+
+if(process.env.NODE_ENV === 'production'){
+  // log to console and file in production
+  logger = new winston.Logger({
+    transports: [
+      new winston.transports.File({
+        level:            'info',
+        filename:         './logs/all-logs.log',
+        handleExceptions: true,
+        json:             true,
+        maxsize:          5242880, //5MB
+        maxFiles:         5,
+        colorize:         false
+      }),
+      new winston.transports.Console({
+        level:            'debug',
+        handleExceptions: true,
+        json:             false,
+        colorize:         true
+      })
+    ],
+    exitOnError: false
+  })
+
+} else {
+  // just log to console in dev
+  logger = new winston.Logger({
+    transports: [
+      new winston.transports.Console({
+        level:            'debug',
+        handleExceptions: true,
+        json:             false,
+        colorize:         true
+      })
+    ],
+    exitOnError: false
+  })
 }
 
-var logger
-if(process.env.NODE_ENV === 'production'){
-   logger = bunyan.createLogger({
-      name: "ProductionLogger",
-      serializers: bunyan.stdSerializers,
-      streams: [{
-        type: 'rotating-file',
-        path: 'var/log/app.log',
-        period: '1w',   // weekly rotation
-        count: 4        // keep 4 back copies
-      },
-      {
-        stream: process.stdout
-      }]
-  });
-} else {
-  logger = bunyan.createLogger({
-      name: "DevelopmentLogger",
-      serializers: {
-        req: liteReqSerializer,
-        res: bunyan.stdSerializers.res,
-        err: bunyan.stdSerializers.err
-      },
-      streams: [
-        {
-          stream: formatOut
-        }
-      ]
-  });
-}
+// stream is used to process input from morgan
+logger.stream = {
+  write: function(message, encoding){
+    logger.info(message);
+  }
+};
 
 module.exports = logger

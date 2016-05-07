@@ -1,6 +1,6 @@
 var models = require('../models/index')
-var debug = require('debug')('user-controller');
 var format = require('../util/jsonAPIFormatter')
+var logger = require('../log')
 
 var allowedUserAttributes = ['email', 'password', 'displayName']
 
@@ -80,7 +80,7 @@ var usersController = {
       if(user){
         user.updateAttributes(createUpdateObject(req))
         .then(function(user) {
-          res.send(format(user));
+          res.json(format(user));
         })
       } else {
         next()

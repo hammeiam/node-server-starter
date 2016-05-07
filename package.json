@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon bin/www | bunyan",
-    "start": "NODE_ENV=production node bin/www",
+    "dev": "NODE_ENV=development nodemon bin/www",
+    "start": "NODE_ENV=production DATABASE_URL=postgres://david:null@localhost/database_development node bin/www",
     "test": "NODE_ENV=test mocha -R spec  test/*.js"
   },
   "keywords": [],
@@ -14,14 +14,14 @@
   "dependencies": {
     "bcrypt": "^0.8.5",
     "body-parser": "^1.15.0",
-    "bunyan": "^1.8.1",
-    "bunyan-format": "^0.2.1",
-    "debug": "^2.2.0",
+    "custom-error-generator": "^7.0.0",
     "express": "^4.13.4",
     "jsonwebtoken": "^5.7.0",
-    "pg": "^3.3.12",
-    "pg-hstore": "^2.1.17",
-    "sequelize": "^3.21.0"
+    "morgan": "^1.7.0",
+    "pg": "^4.5.5",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.21.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "mocha": "^2.4.5",

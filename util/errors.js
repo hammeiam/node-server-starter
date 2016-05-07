@@ -1,55 +1,21 @@
-function defaultError(){
-  return {
-    status: '400',
-    title: 'Bad Request',
-    detail: 'Something went wrong'
-  }
-}
+var createCustomError = require('custom-error-generator');
 
-function MyError(message) {
-  this.name = 'MyError';
-  this.status = '404'
-  this.title = 'Not Found'
-  this.message = message || 'Default Message';
-  this.stack = (new Error()).stack;
-}
-MyError.prototype = Object.create(Error.prototype);
-MyError.prototype.constructor = MyError;
+var UnauthorizedError   = createCustomError('UnauthorizedError',  { 'status' : 401, 'title' : 'Unauthorized' });
+var ForbiddenError      = createCustomError('ForbiddenError',     { 'status' : 403, 'title' : 'Forbidden' });
+var NotFoundError       = createCustomError('NotFoundError',      { 'status' : 404, 'title' : 'Not Found' });
+var ValidationError     = createCustomError('ValidationError',    { 'status' : 422, 'title' : 'Unprocessable Entity' });
+var InternalServerError = createCustomError('InternalServerError', { 'status' : 500, 'title' : 'Internal Server Error' });
 
 var errors = {
-  notFound: function(comment){
-    return new MyError(comment)
-    var errorObj = {
-      status: '404',
-      title: 'Not Found'
-    }
-    if(comment){
-      errorObj.detail = comment
-    }
-    return errorObj
-  },
+  notFound: NotFoundError,
 
-  forbidden: function(comment){
-    var errorObj = {
-      status: '403',
-      title: 'Forbidden'
-    }
-    if(comment){
-      errorObj.detail = comment
-    }
-    return errorObj
-  },
+  forbidden: ForbiddenError,
 
-  unauthorized: function(comment){
-    var errorObj = {
-      status: '401',
-      title: 'Unauthorized'
-    }
-    if(comment){
-      errorObj.detail = comment
-    }
-    return errorObj
-  }
+  unauthorized: UnauthorizedError,
+
+  validation: ValidationError,
+
+  internal: InternalServerError
 }
 
 module.exports = errors

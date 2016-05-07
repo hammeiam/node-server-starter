@@ -1,32 +1,29 @@
 var express = require('express')
+var morgan = require('morgan')
 var bodyParser = require('body-parser')
 var apiRouter = require('./routes');
 var errors = require('./util/errors')
 var logger = require('./log')
 var appPort = process.env.PORT || 8080
-
-// connect to our db
-// mongoose.connect('mongodb://' + dbHost + '/' + dbName);
+var logType = process.env.NODE_ENV === 'development' ? 'dev' : 'combined'
 
 var app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(function(req, res, next){
-  logger.info({req: req})
-  next()
-})
+app.set('port', appPort);
+
+app.use(morgan(logType, { 'stream': logger.stream }))
+
 //--- HEADERS ---//
-// configuration for accepting CORS requests, can be removed
 app.use(function(req, res, next) {
+  // set content type because this is a json api
+  res.setHeader('Content-Type', 'application/vnd.api+json')
+
+  // configuration for accepting CORS requests, can be removed
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST')
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, \
   Authorization')
-  next()
-})
-
-app.use(function(req, res, next) {
-  res.setHeader('Content-Type', 'application/vnd.api+json')
   next()
 })
 
@@ -37,57 +34,43 @@ app.get('/', function(req, res) {
 
 app.use('/', apiRouter);
 
-// 404 middleware
+//--- ERROR HANDLING ---//
 app.use(function(req, res, next) {
-  // res.status(404).send({
-  //   success: false,
-  //   errors: [
-  //     errors.notFound()
-  //   ]
-  // });
-  // logger.info({res: res})
-  next(errors.notFound())
+  // if no other controllers have returned by now, it's a 404
+  next(new errors.notFound())
 });
 
-// validation error handling middleware
 app.use(function(err, req, res, next) {
+  // handle Sequelize errors explicitly
   if(err.name === 'SequelizeValidationError'){
     var message = err.message || 'Invalid Input'
-    return next({
-      status: '422',
-      message: message
-    })
+    return next(new errors.validation(message))
   }
 
   next(err)
 });
 
-
-// catchall error handling
 app.use(function(err, req, res, next) {
-  logger.warn({err: err})
-  // handle multiple errors, format like http://jsonapi.org/examples/#error-objects
-
-  res.status(err.status || 500);
-  if(err.hasOwnProperty('title')){
-    // I'm guessing this was a handled error
-    res.json({
-      errors: [
-        err
-      ]
-    });
-  } else {
-    res.json({
-      errors: [
-        {
-          status: err.status,
-          message: err.message,
-          errorDetails: (app.get('env') === 'development') ? err : {}
-        }
-      ]
-    });
+  // Catch and process all other errors here.
+  // Errors returned in JSON API compliant format
+  // http://jsonapi.org/examples/#error-objects
+  var status = err.status ? err.status : 500
+  if(status >= 500){
+    // only log the error if we haven't handled it via errors.js
+    logger.error(err)
   }
-  logger.info({res: res})
+
+  res.status(status)
+  res.json({
+    errors: [
+      {
+        status: status.toString(),
+        detail: err.message,
+        title: err.title,
+        errorDetails: (app.get('env') === 'development') ? err : {}
+      }
+    ]
+  });
 });
 
 module.exports = app

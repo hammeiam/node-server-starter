@@ -1,6 +1,7 @@
 var jwt = require('jsonwebtoken')
 var models = require('../models/index')
 var errors = require('../util/errors')
+var logger = require('../log')
 var secret = process.env.AUTH_SECRET || 'changeMeASAP'
 
 var authenticationController = {
@@ -42,8 +43,8 @@ var authenticationController = {
 
   confirm: function(req, res, next){
     // doesn't map to an actual route
-    console.log('Authenticating...')
     var token = req.body.token || req.query.token || req.headers['x-access-token']
+    // logger.debug('Authorizing user. Token is ' + token ? '' : 'not ' + 'present')
 
     if(!token){
       return next(errors.forbidden('No token provided'))
@@ -54,7 +55,7 @@ var authenticationController = {
         return next(errors.forbidden('Failed to authenticate token'))
       }
 
-      console.log('Authenticated user ' + decoded.id);
+      // logger.debug('Authenticated user ' + decoded.id);
       req.currentUser = decoded
 
       next()
