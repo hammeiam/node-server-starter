@@ -5,10 +5,6 @@ var errors = require('../util/errors')
 
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define('User', {
-    displayName: {
-      allowNull: false,
-      type: DataTypes.STRING
-    },
     password: {
       allowNull: false,
       type: DataTypes.STRING

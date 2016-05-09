@@ -58,7 +58,7 @@ Associations: none
 // TODO
 - auto-create database http://stackoverflow.com/questions/31294562/sequelize-create-database
 - better error handling in controller https://github.com/sequelize/sequelize/issues/1949 X
-- add better logging
+- add better logging X
 - write some tests
 - make sure that returned errors are json spec compliant. Standardize somehow. http://jsonapi.org/examples/#error-objects X
 - move towards promises for everything

@@ -5,14 +5,15 @@ var apiRouter = require('./routes');
 var errors = require('./util/errors')
 var logger = require('./log')
 var appPort = process.env.PORT || 8080
-var logType = process.env.NODE_ENV === 'development' ? 'dev' : 'combined'
+var logType = process.env.NODE_ENV === 'production' ? 'combined' : 'dev'
 
 var app = express()
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.set('port', appPort);
-
-app.use(morgan(logType, { 'stream': logger.stream }))
+if(app.get('env') !== 'test'){
+  app.use(morgan(logType, { 'stream': logger.stream }))
+}
 
 //--- HEADERS ---//
 app.use(function(req, res, next) {
@@ -29,7 +30,7 @@ app.use(function(req, res, next) {
 
 //--- ROUTING ---//
 app.get('/', function(req, res) {
-  res.send('Your server is alive! Remove this route.')
+  res.status(200).json({message: 'Your server is alive! Remove this route from app.js'})
 })
 
 app.use('/', apiRouter);
@@ -55,13 +56,13 @@ app.use(function(err, req, res, next) {
   // Errors returned in JSON API compliant format
   // http://jsonapi.org/examples/#error-objects
   var status = err.status ? err.status : 500
-  if(status >= 500){
-    // only log the error if we haven't handled it via errors.js
-    logger.error(err)
-  }
 
-  res.status(status)
-  res.json({
+  // only log the error if we haven't handled it via errors.js
+  if(status >= 500){ logger.error(err) }
+
+  res
+    .status(status)
+    .json({
     errors: [
       {
         status: status.toString(),

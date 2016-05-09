@@ -1,6 +1,7 @@
 /*
 *  functions to format data returned from the database
 *  as valid JSON API responses according to jsonapi.org
+*  Details: http://jsonapi.org/format/#fetching-resources
 *  TODO: handle associations
 */
 function formatItem(item){

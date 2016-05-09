@@ -47,12 +47,12 @@ var authenticationController = {
     // logger.debug('Authorizing user. Token is ' + token ? '' : 'not ' + 'present')
 
     if(!token){
-      return next(errors.forbidden('No token provided'))
+      return next(errors.unauthorized('No token provided'))
     }
 
     jwt.verify(token, secret, function(err, decoded) {
       if(err){
-        return next(errors.forbidden('Failed to authenticate token'))
+        return next(errors.unauthorized('Failed to authenticate token'))
       }
 
       // logger.debug('Authenticated user ' + decoded.id);

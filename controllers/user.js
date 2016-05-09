@@ -1,6 +1,7 @@
 var models = require('../models/index')
 var format = require('../util/jsonAPIFormatter')
 var logger = require('../log')
+var errors = require('../util/errors')
 
 var allowedUserAttributes = ['email', 'password', 'displayName']
 
@@ -36,7 +37,7 @@ var usersController = {
       if(user){
         res.json(format(user))
       } else {
-        next()
+        next(new errors.notFound('User not found'))
       }
     })
     .catch(next)
@@ -54,7 +55,7 @@ var usersController = {
           res.json(format(user))
         })
       } else {
-        next()
+        next(new errors.notFound('User not found'))
       }
     })
     .catch(next)
@@ -83,7 +84,7 @@ var usersController = {
           res.json(format(user));
         })
       } else {
-        next()
+        next(new errors.notFound('User not found'))
       }
     })
     .catch(next)
