@@ -3,7 +3,7 @@ var morgan = require('morgan')
 var bodyParser = require('body-parser')
 var apiRouter = require('./routes');
 var errors = require('./util/errors')
-var logger = require('./log')
+var logger = require('./util/log')
 var appPort = process.env.PORT || 8080
 var logType = process.env.NODE_ENV === 'production' ? 'combined' : 'dev'
 
@@ -16,7 +16,7 @@ if(app.get('env') !== 'test'){
 }
 
 //--- HEADERS ---//
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   // set content type because this is a json api
   res.setHeader('Content-Type', 'application/vnd.api+json')
 
@@ -36,12 +36,12 @@ app.get('/', function(req, res) {
 app.use('/', apiRouter);
 
 //--- ERROR HANDLING ---//
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   // if no other controllers have returned by now, it's a 404
   next(new errors.notFound())
 });
 
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // handle Sequelize errors explicitly
   if(err.name === 'SequelizeValidationError'){
     var message = err.message || 'Invalid Input'
@@ -51,7 +51,7 @@ app.use(function(err, req, res, next) {
   next(err)
 });
 
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // Catch and process all other errors here.
   // Errors returned in JSON API compliant format
   // http://jsonapi.org/examples/#error-objects

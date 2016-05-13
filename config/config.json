@@ -1,6 +1,6 @@
 {
   "development": {
-    "username": "david",
+    "username": null,
     "password": null,
     "database": "database_development",
     "host": "localhost",
@@ -8,7 +8,7 @@
     "dialect": "postgres"
   },
   "test": {
-    "username": "david",
+    "username": null,
     "password": null,
     "database": "database_test",
     "host": "localhost",

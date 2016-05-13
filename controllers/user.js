@@ -1,11 +1,11 @@
 var models = require('../models/index')
 var format = require('../util/jsonAPIFormatter')
-var logger = require('../log')
+var logger = require('../util/log')
 var errors = require('../util/errors')
 
 var allowedUserAttributes = ['email', 'password', 'displayName']
 
-var createUpdateObject = function(req){
+var createUpdateObject = req => {
   var output = {}
   for (var i = 0; i < allowedUserAttributes.length; i++) {
     var attr = allowedUserAttributes[i]
@@ -17,23 +17,23 @@ var createUpdateObject = function(req){
 }
 
 var usersController = {
-  getAll: function getAllUsers(req, res, next){
+  getAll: (req, res, next) => {
     models.User
     .findAll({})
-    .then(function(users) {
+    .then(users => {
       res.json(format(users))
     })
     .catch(next);
   },
 
-  get: function getUser(req, res, next){
+  get: (req, res, next) => {
     models.User
     .findOne({
       where: {
         id: req.params.id
       }
     })
-    .then(function(user){
+    .then(user => {
       if(user){
         res.json(format(user))
       } else {
@@ -43,15 +43,15 @@ var usersController = {
     .catch(next)
   },
 
-  delete: function deleteUser(req, res, next){
+  delete: (req, res, next) => {
     models.User
     .findOne({
       where: {
         id: req.params.id
       }
-    }).then(function(user) {
+    }).then(user => {
       if(user){
-        user.destroy().then(function() {
+        user.destroy().then(() => {
           res.json(format(user))
         })
       } else {
@@ -61,26 +61,26 @@ var usersController = {
     .catch(next)
   },
 
-  post: function postUser(req, res, next) {
+  post: (req, res, next) => {
     models.User
     .create(createUpdateObject(req))
-    .then(function(user) {
+    .then(user => {
       res.json(format(user));
     })
     .catch(next)
   },
 
-  put: function putUser(req, res, next) {
+  put: (req, res, next) => {
     models.User
     .findOne({
       where: {
         id: req.params.id
       }
     })
-    .then(function(user) {
+    .then(user => {
       if(user){
         user.updateAttributes(createUpdateObject(req))
-        .then(function(user) {
+        .then(user => {
           res.json(format(user));
         })
       } else {

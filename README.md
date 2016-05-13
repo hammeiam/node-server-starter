@@ -32,7 +32,6 @@ Why Sequelize?
 Attributes:
 - `id`
 - `email`
-- `displayName`
 - `password`
 
 Methods:

@@ -1,22 +1,22 @@
 var jwt = require('jsonwebtoken')
 var models = require('../models/index')
 var errors = require('../util/errors')
-var logger = require('../log')
+var logger = require('../util/log')
 var secret = process.env.AUTH_SECRET || 'changeMeASAP'
 
 var authenticationController = {
-  post: function(req, res, next){
+  post: (req, res, next) => {
     models.User.findOne({
       where: {
         email: req.body.email
       }
     })
-    .then(function(user){
+    .then(user => {
       if(!user){
         return next(errors.unauthorized('No such user'))
       }
 
-      user.validPassword(req.body.password, function(err, isValid){
+      user.validPassword(req.body.password, (err, isValid) => {
         if(err){
           return next(err)
         }
@@ -41,16 +41,17 @@ var authenticationController = {
     .catch(next)
   },
 
-  confirm: function(req, res, next){
+  confirm: (req, res, next) => {
     // doesn't map to an actual route
-    var token = req.body.token || req.query.token || req.headers['x-access-token']
-    // logger.debug('Authorizing user. Token is ' + token ? '' : 'not ' + 'present')
+    var header = req.headers['authorization']
+    var token = header && header.split(' ')[1]
+    // logger.debug('Authorizing user. Token is ' + (token ? '' : 'not ') + 'present.')
 
     if(!token){
       return next(errors.unauthorized('No token provided'))
     }
 
-    jwt.verify(token, secret, function(err, decoded) {
+    jwt.verify(token, secret, (err, decoded) => {
       if(err){
         return next(errors.unauthorized('Failed to authenticate token'))
       }

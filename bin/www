@@ -2,10 +2,10 @@
 
 var app = require('../app');
 var models = require('../models');
-var logger = require('../log')
+var logger = require('../util/log')
 
-module.exports = models.sequelize.sync().then(function () {
-  var server = app.listen(app.get('port'), function() {
-    logger.info('Express server listening on port ' + server.address().port);
+module.exports = models.sequelize.sync().then(() => {
+  var server = app.listen(app.get('port'), () => {
+    logger.info(`Express server listening on port ${server.address().port}`);
   });
 });
