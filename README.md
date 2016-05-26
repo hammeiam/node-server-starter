@@ -18,6 +18,7 @@ Logging is done with [Winston](https://github.com/winstonjs/winston) and [Morgan
 Right now all logs are saved to `logs/all-logs.log` in prod, but you can split this into multiple files by level (info, warn, error, etc) by adding more transports. You can also split log files by date with the [winston-daily-rotate-file](https://github.com/winstonjs/winston-daily-rotate-file) module.
 
 ### Authentication
+http://slatepeak.com/guides/building-a-software-as-a-service-saas-startup-pt-2/
 Why Passport?
 Why JWT?
 
@@ -65,3 +66,4 @@ Associations: none
 - create controllers to simplify routes X
 - https://www.airpair.com/node.js/posts/top-10-mistakes-node-developers-make
 - https://www.robotlovesyou.com/bdd-tdd/
+- maybe add back in verbose auth errors, along with http://passportjs.org/docs/authenticate#custom-callback

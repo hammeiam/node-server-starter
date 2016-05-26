@@ -4,6 +4,8 @@ var bodyParser = require('body-parser')
 var apiRouter = require('./routes');
 var errors = require('./util/errors')
 var logger = require('./util/log')
+var passport = require('passport');
+var setupPassport = require('./config/passport').setup
 var appPort = process.env.PORT || 8080
 var logType = process.env.NODE_ENV === 'production' ? 'combined' : 'dev'
 
@@ -14,6 +16,9 @@ app.set('port', appPort);
 if(app.get('env') !== 'test'){
   app.use(morgan(logType, { 'stream': logger.stream }))
 }
+
+app.use(passport.initialize());
+setupPassport(passport);
 
 //--- HEADERS ---//
 app.use((req, res, next) => {
@@ -67,7 +72,7 @@ app.use((err, req, res, next) => {
       {
         status: status.toString(),
         detail: err.message,
-        title: err.title,
+        title: err.title || err.message,
         errorDetails: (app.get('env') === 'development') ? err : {}
       }
     ]

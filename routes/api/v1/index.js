@@ -7,7 +7,8 @@ var authenticationController = require('../../../controllers/authentication.js')
 router.post('/authenticate', authenticationController.post)
 
 // Authentication middleware
-router.use(authenticationController.confirm)
+// Comment me out to create your first user via the api
+// router.use(authenticationController.confirm)
 
 // authentication-protected routes below
 router.use('/users', users)

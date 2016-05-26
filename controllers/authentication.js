@@ -33,7 +33,6 @@ var authenticationController = {
         var token = jwt.sign(payload, secret, options)
 
         res.json({
-          success: true,
           token: token
         })
       })
